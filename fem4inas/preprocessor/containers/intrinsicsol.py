@@ -87,5 +87,25 @@ class GustRoger:
     Qhj_wsum:jnp.ndarray = None
     Qhjl_wdot:jnp.ndarray = None
 
+@dataclass(slots=True)
+class ModalAeroStatespace:
+    
+    A: jnp.ndarray = None
+    B0: jnp.ndarray = None
+    B1: jnp.ndarray = None
+    Bw: jnp.ndarray = None
+    C: jnp.ndarray = None
+    D0: jnp.ndarray = None
+    D1: jnp.ndarray = None
+    Dw: jnp.ndarray = None
+    Ahat: jnp.ndarray = None
+    B0hat: jnp.ndarray = None
+    B1hat: jnp.ndarray = None
+    Bwhat: jnp.ndarray = None
+    Chat: jnp.ndarray = None
+    D0hat: jnp.ndarray = None
+    D1hat: jnp.ndarray = None
+    Dwhat: jnp.ndarray = None
+
 # import dataclasses    
 # field_types = {field.name: field.type for field in dataclasses.fields(Modes)}

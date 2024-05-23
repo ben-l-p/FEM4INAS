@@ -120,3 +120,53 @@ class AeroRoger(ModalAero):
             A2hat = (jnp.eye(len(self.container["A2hat"])) -
                      self.container["A2hat"])
             self.container["A2hatinv"] = jnp.linalg.inv(A2hat)
+
+@Registry.register("AeroStatespace")
+class AeroStatespace(ModalAero):    
+    def __init__(self,
+                system: intrinsicmodal.Dsystem,
+                sol: solution.IntrinsicSolution):
+        self.sys = system
+        self.settings = system.aero
+        self.sol = sol
+        self.container = None
+
+    def set_container(self, container):
+        self.container = copy.deepcopy(container)
+
+    def _set_flow(self):
+        self.u_inf = self.sys.aero.u_inf
+        self.rho_inf = self.sys.aero.rho_inf
+        self.c_ref = self.sys.aero.c_ref
+        self.q_inf = self.sys.aero.q_inf
+
+    def get_matrices(self):
+        self._set_flow()
+
+        self.container = dict()
+        self.container['A'] = self.sys.aero.ss_A
+        self.container['B0'] = self.sys.aero.ss_B0
+        self.container['B1'] = self.sys.aero.ss_B1
+        self.container['C'] = self.sys.aero.ss_C
+        self.container['D0'] = self.sys.aero.ss_D0
+        self.container['D1'] = self.sys.aero.ss_D1
+
+        if self.sys.aero.ss_Bw is not None:
+            self.container['Bw'] = self.sys.aero.ss_Bw
+            self.container['Dw'] = self.sys.aero.ss_Dw
+
+        for key in ['A', 'B0', 'B1', 'Bw']:
+            if key in self.container.keys():
+                if self.sys.aero.use_reduced_time:
+                    self.container[key + 'hat'] = self.container[key]*2*self.u_inf/self.c_ref
+                else:
+                    self.container[key + 'hat'] = self.container[key]
+
+        for key in ['C', 'D0', 'D1', 'Dw']:
+            if key in self.container.keys():
+                self.container[key + 'hat'] = self.container[key]*self.q_inf
+
+    def save_sol(self):
+        self.sol.add_container("ModalAeroStatespace",
+                               label="_"+self.sys.name,
+                               **self.container)

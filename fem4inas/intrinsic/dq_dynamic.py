@@ -6,6 +6,7 @@ import fem4inas.intrinsic.postprocess as postprocess
 import fem4inas.intrinsic.dq_common as common
 import fem4inas.intrinsic.functions as functions
 from functools import partial
+
 #@jax.jit
 def dq_20g1(t, q, *args):
     """Clamped Structural dynamics, free vibrations."""
@@ -269,36 +270,133 @@ def dq_20g273(t, q, *args):
     #Fl = Fl_tensor.reshape(num_modes * num_poles
     return jnp.hstack([F1, F2, Fl, F0])
 
-#@jax.jit
-#@partial(jax.jit, static_argnames=['q'])
-# def dq_20g273(t, q, *args):
-#     """Gust response, q0 obtained via integrator q1."""
-#     (gamma1, gamma2, omega, states,
-#      num_modes, num_poles,
-#      A0hat, A1hat, A2hatinv, A3hat,
-#      u_inf, c_ref, poles,
-#      xgust, F1gust, Flgust) = args[0]
+#@partial(jax.jit, static_argnums=2)
+def dq_20G1(t, q, *args):
+    """Free Structural dynamic gravity forces."""
+    
+    (gamma1, gamma2, omega, phi1l, psi2l,
+     force_gravity,
+     states,
+     X_xdelta,
+     C0ab,
+     component_names, num_nodes,
+     component_nodes, component_father) = args[0]
+    
+    q1 = q[states['q1']]
+    q2 = q[states['q2']]
+    try:
+        qr = q[states['qr']]
+    except:
+        qr = jnp.array([1, 0, 0, 0])
+    
+    Rab = common.computeRab_node0(psi2l, q2, qr, X_xdelta, C0ab,
+                                  component_names,
+                                   num_nodes,
+                                   component_nodes,
+                                   component_father)
 
-#     q1 = q[states['q1']]
-#     q2 = q[states['q2']]
-#     ql = q[states['ql']]
-#     q0 = q[states['q0']]
-#     #q0 = -q2 / omega
-#     #jax.debug.print("q0: {}", q0)
-#     # ql_tensor = ql.reshape((num_modes, num_poles))
-#     eta_s = xloads.eta_rogerstruct(q0, q1, ql,
-#                                    A0hat, A1hat, A2hatinv,
-#                                    num_modes, num_poles)
-#     eta_gust = xloads.eta_rogergust(t, xgust, F1gust)
-#     F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
-#     #F1 += eta_s + eta_gust
-#     F1 +=  eta_gust
-#     F1 = A2hatinv @ F1 #Nm
-#     Fl = xloads.lags_rogerstructure(A3hat, q1, ql, u_inf,
-#                                     c_ref, poles,
-#                                     num_modes, num_poles)  # NlxNm 
-#     Flgust = xloads.lags_rogergust(t, xgust, Flgust)  # NlxNm
-#     Fl = Flgust
-#     F0 = q1
-#     #Fl = Fl_tensor.reshape(num_modes * num_poles
-#     return jnp.hstack([F1, F2, Fl, F0])
+    # no interpolation of gravity in dynamic case
+    eta = xloads.eta_pointdead_const(phi1l,
+                                     force_gravity[-1],
+                                     Rab)
+    F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
+    F1 += eta
+
+    F = jnp.hstack([F1, F2])
+    return F
+
+# NEW
+def dq_20g3(t, q, *args):
+    (gamma1, gamma2, omega, states,
+     num_modes, num_poles,
+     A0hat, A1hat, A2hatinv, A3hat,
+     u_inf, c_ref, poles) = args[0]
+
+    q1 = q[states['q1']]
+    q2 = q[states['q2']]
+    q0 = -q2 / omega
+    ql = q[states['ql']]
+    eta_s = xloads.eta_rogerstruct(q0, q1, ql,
+                                   A0hat, A1hat,
+                                   num_modes, num_poles)
+    F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
+    F1 = A2hatinv @ F1
+    Fl = xloads.lags_rogerstructure(A3hat, q1, ql, u_inf,
+                                    c_ref, poles,
+                                    num_modes, num_poles)
+    
+    F1 += eta_s
+
+    return jnp.hstack([F1, F2, Fl])
+
+# NEW
+def dq_20G3(t, q, *args):
+    (gamma1, gamma2, omega, phi1l, psi2l, force_gravity,
+    states, X_xdelta, C0ab, component_names, num_nodes,
+     component_nodes, component_father, num_modes, num_poles,
+     A0hat, A1hat, A2hatinv, A3hat,
+     u_inf, c_ref, poles) = args[0]
+
+    q1 = q[states['q1']]
+    q2 = q[states['q2']]
+    q0 = -q2 / omega
+    ql = q[states['ql']]
+
+    qr = jnp.array([1, 0, 0, 0])
+
+    Rab = common.computeRab_node0(psi2l, q2, qr, X_xdelta, C0ab,
+                                component_names,
+                                num_nodes,
+                                component_nodes,
+                                component_father)
+
+
+    eta_g = xloads.eta_pointdead_const(phi1l,
+                                     force_gravity[-1],
+                                     Rab)
+    
+    eta_s = xloads.eta_rogerstruct(q0, q1, ql,
+                                   A0hat, A1hat,
+                                   num_modes, num_poles)
+    F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
+    F1 = A2hatinv @ F1
+    Fl = xloads.lags_rogerstructure(A3hat, q1, ql, u_inf,
+                                    c_ref, poles,
+                                    num_modes, num_poles)
+    
+    F1 += eta_s + eta_g
+
+    return jnp.hstack([F1, F2, Fl])
+
+# SHARPy
+def dq_20G27(t, q, *args):
+    # State space with no gust
+    (gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
+     states, X_xdelta, C0ab, component_names, num_nodes, 
+     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat) = args[0]
+
+    q1 = q[states['q1']]
+    q2 = q[states['q2']]
+    q0 = -q2 / omega
+    ql = q[states['ql']]
+
+    qr = jnp.array([1, 0, 0, 0])
+
+    Rab = common.computeRab_node0(psi2l, q2, qr, X_xdelta, C0ab,
+                                component_names,
+                                num_nodes,
+                                component_nodes,
+                                component_father)
+    
+    eta_g = xloads.eta_pointdead_const(phi1l,
+                                    force_gravity[-1],
+                                    Rab)
+
+    eta_s = xloads.eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat)
+
+    F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
+    F1 += eta_s + eta_g
+
+    Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
+
+    return jnp.hstack([F1, F2, Fl])

@@ -241,6 +241,14 @@ def lags_rogergust(t, xgust, Flgust):
 #     eta = D0hat @ wgust + D1hat @ wgust_dot + D2hat @ wgust_ddot
 #     return eta
 
+def lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat):
+    ql_dot = Ahat @ ql + B0hat @ q0 + B1hat @ q1
+    return ql_dot
+
+def eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat):
+    eta_s = Chat @ ql + D0hat @ q0 + D1hat @ q1
+    return eta_s
+
 ########################
 def eta_000001(t, phi1, x, force_follower):
 

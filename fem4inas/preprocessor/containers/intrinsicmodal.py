@@ -101,6 +101,18 @@ class Daero(DataContainer):
     controller_settings: dict = dfield("", default=None)
     controller: DController = dfield("", init=False)
 
+    # Statespace aero
+    use_reduced_time: bool = dfield("", default=None)
+    ss_A: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_B0: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_B1: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_Bw: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_C: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_D0: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_D1: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+    ss_Dw: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
+
+
     def __post_init__(self):
         object.__setattr__(self, "approx", self.approx.capitalize())
         if self.gust is not None:
@@ -128,6 +140,24 @@ class Daero(DataContainer):
             object.__setattr__(self, "C", jnp.load(self.C))
         if isinstance(self.D, (str, pathlib.Path)):
             object.__setattr__(self, "D", jnp.load(self.D))
+
+        if isinstance(self.ss_A, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_A", jnp.load(self.ss_A))
+        if isinstance(self.ss_B0, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_B0", jnp.load(self.ss_B0))
+        if isinstance(self.ss_B1, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_B1", jnp.load(self.ss_B1))
+        if isinstance(self.ss_Bw, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_Bw", jnp.load(self.ss_Bw))
+        if isinstance(self.ss_C, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_C", jnp.load(self.ss_C))
+        if isinstance(self.ss_D0, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_D0", jnp.load(self.ss_D0))
+        if isinstance(self.ss_D1, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_D1", jnp.load(self.ss_D1))
+        if isinstance(self.ss_Dw, (str, pathlib.Path)):
+            object.__setattr__(self, "ss_Dw", jnp.load(self.ss_Dw))
+
 
 @dataclass(frozen=True)
 class Dxloads(DataContainer):
@@ -563,9 +593,13 @@ class Dsystem(DataContainer):
         elif self.solution == "dynamic":
             tracker.update(q1=num_modes,
                            q2=num_modes)
-            if (self.label_map['aero_sol'] and
-                self.aero.approx.lower() == "roger"):
-                tracker.update(ql=self.aero.num_poles * num_modes)
+            if self.label_map['aero_sol']:
+                if self.aero.approx.lower() == "roger":
+                    tracker.update(ql=self.aero.num_poles * num_modes)
+                elif self.aero.approx.lower() == "statespace":
+                    num_lags = self.aero.ss_A.shape[0]
+                    tracker.update(ql=num_lags)
+
             if self.q0treatment == 1:
                 tracker.update(q0=num_modes)
             if self.bc1.lower() != "clamped":
@@ -596,6 +630,8 @@ class Dsystem(DataContainer):
                 lmap['aero_sol'] = 1
             elif self.aero.approx.lower() == "loewner":
                 lmap['aero_sol'] = 2
+            elif self.aero.approx.lower() == "statespace":
+                lmap['aero_sol'] = 3
             if self.aero.qalpha is None and self.aero.qx is None:
                 lmap['aero_steady'] = 0
             elif self.aero.qalpha is not None and self.aero.qx is None:

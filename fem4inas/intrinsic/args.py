@@ -288,6 +288,122 @@ def arg_20g21(sol: solution.IntrinsicSolution,
             u_inf, c_ref, aero.poles,
             gust.x, F1g, Flg)
 
+# NEW
+@catter2library
+def arg_20G1(sol: solution.IntrinsicSolution,
+             system: intrinsicmodal.Dsystem,
+             fem: intrinsicmodal.Dfem,
+             *args, **kwargs):
+
+    phi1l = sol.data.modes.phi1l
+    psi2l = sol.data.modes.psi2l
+    gamma1 = sol.data.couplings.gamma1
+    gamma2 = sol.data.couplings.gamma2
+    omega = sol.data.modes.omega
+    #x = system.xloads.x
+    states = system.states
+    force_gravity = system.xloads.force_gravity
+    X_xdelta = sol.data.modes.X_xdelta
+    C0ab = sol.data.modes.C0ab
+    num_nodes = fem.num_nodes
+    component_nodes = fem.component_nodes_int
+    component_names = fem.component_names_int
+    component_father = fem.component_father_int
+    return (gamma1, gamma2, omega, phi1l, psi2l,
+            force_gravity,
+            states,
+            X_xdelta,
+            C0ab,
+            component_names, num_nodes,
+            component_nodes, component_father)
+
+# NEW
+@catter2library
+def arg_20g3(sol: solution.IntrinsicSolution,
+              sys: intrinsicmodal.Dsystem,
+              fem: intrinsicmodal.Dfem,
+              *args, **kwargs):
+
+        gamma1 = sol.data.couplings.gamma1
+        gamma2 = sol.data.couplings.gamma2
+        omega = sol.data.modes.omega
+        states = sys.states
+        u_inf = sys.aero.u_inf
+        c_ref = sys.aero.c_ref
+        num_modes = fem.num_modes
+        aero = getattr(sol.data, f"modalaeroroger_{sys.name}")
+        num_poles = sys.aero.num_poles
+        return (gamma1, gamma2, omega, states,
+                num_modes, num_poles,
+                aero.A0hat, aero.A1hat, aero.A2hatinv, aero.A3hat,
+                u_inf, c_ref, aero.poles)
+
+# NEW
+@catter2library
+def arg_20G3(sol: solution.IntrinsicSolution,
+              sys: intrinsicmodal.Dsystem,
+              fem: intrinsicmodal.Dfem,
+              *args, **kwargs):
+
+        phi1l = sol.data.modes.phi1l
+        psi2l = sol.data.modes.psi2l
+        gamma1 = sol.data.couplings.gamma1
+        gamma2 = sol.data.couplings.gamma2
+        omega = sol.data.modes.omega
+        states = sys.states
+        u_inf = sys.aero.u_inf
+        c_ref = sys.aero.c_ref
+        num_modes = fem.num_modes
+        force_gravity = sys.xloads.force_gravity
+        X_xdelta = sol.data.modes.X_xdelta
+        C0ab = sol.data.modes.C0ab
+
+        num_nodes = fem.num_nodes
+        component_nodes = fem.component_nodes_int
+        component_names = fem.component_names_int
+        component_father = fem.component_father_int
+
+        aero = getattr(sol.data, f"modalaeroroger_{sys.name}")
+        num_poles = sys.aero.num_poles
+
+        return (gamma1, gamma2, omega, phi1l, psi2l, force_gravity,
+                states, X_xdelta, C0ab, component_names, num_nodes,
+                component_nodes, component_father, num_modes, num_poles,
+                aero.A0hat, aero.A1hat, aero.A2hatinv, aero.A3hat,
+                u_inf, c_ref, aero.poles)
+
+# SHARPy
+@catter2library
+def arg_20G27(sol: solution.IntrinsicSolution,
+                sys: intrinsicmodal.Dsystem,
+                fem: intrinsicmodal.Dfem,
+                *args, **kwargs):
+              
+        phi1l = sol.data.modes.phi1l
+        psi2l = sol.data.modes.psi2l
+        gamma1 = sol.data.couplings.gamma1
+        gamma2 = sol.data.couplings.gamma2
+        omega = sol.data.modes.omega
+        states = sys.states
+        u_inf = sys.aero.u_inf
+        c_ref = sys.aero.c_ref
+        num_modes = fem.num_modes
+        force_gravity = sys.xloads.force_gravity
+        X_xdelta = sol.data.modes.X_xdelta
+        C0ab = sol.data.modes.C0ab
+
+        num_nodes = fem.num_nodes
+        component_nodes = fem.component_nodes_int
+        component_names = fem.component_names_int
+        component_father = fem.component_father_int
+
+        aero = getattr(sol.data, f"modalaerostatespace_{sys.name}")
+
+        return(gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
+                states, X_xdelta, C0ab, component_names, num_nodes, 
+                component_nodes, component_father,
+                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat)
+
 @catter2library
 def arg_20g21l(sol: solution.IntrinsicSolution,
                sys: intrinsicmodal.Dsystem,
