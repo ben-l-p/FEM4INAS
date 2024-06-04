@@ -148,6 +148,7 @@ def eta_pointdead_const(phi1, f, Rab):
     f_fd = f1(Rab, f)
     eta = jnp.tensordot(phi1, f_fd, axes=([1, 2],
                                           [0, 1]))
+    # jax.debug.print("Force: {F}", F=jnp.sum(f))
     return eta
 
 #@partial(jax.jit, static_argnames=["num_modes", "num_poles"])
@@ -241,6 +242,7 @@ def lags_rogergust(t, xgust, Flgust):
 #     eta = D0hat @ wgust + D1hat @ wgust_dot + D2hat @ wgust_ddot
 #     return eta
 
+# State space functions
 def lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat):
     ql_dot = Ahat @ ql + B0hat @ q0 + B1hat @ q1
     return ql_dot
@@ -248,6 +250,15 @@ def lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat):
 def eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat):
     eta_s = Chat @ ql + D0hat @ q0 + D1hat @ q1
     return eta_s
+
+def lags_statespacegustboth(t, xgust, Flgust):
+    Flgust_tensor = linear_interpolation2(t, xgust, Flgust)
+    Flgust = jnp.hstack(Flgust_tensor)
+    return Flgust
+
+def eta_statespacegust(t, xgust, F1gust):
+    eta = linear_interpolation3(t, xgust, F1gust)
+    return eta
 
 ########################
 def eta_000001(t, phi1, x, force_follower):

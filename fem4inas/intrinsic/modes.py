@@ -144,7 +144,7 @@ def compute_eigs(
         Ka: jnp.ndarray,
         Ma: jnp.ndarray,
         num_modes: int,
-        *args, **kwargs) -> (jnp.ndarray, jnp.ndarray):
+        *args, **kwargs) -> tuple[jnp.ndarray, jnp.ndarray]:
     
     eigenvals, eigenvecs = generalized_eigh(Ka, Ma)
     #eigenvals, eigenvecs = eigh(Ka, Ma)
@@ -156,7 +156,7 @@ def compute_eigs_scipy(
         Ka: jnp.ndarray,
         Ma: jnp.ndarray,
         num_modes: int,
-        *args, **kwargs) -> (jnp.ndarray, jnp.ndarray):
+        *args, **kwargs) -> tuple[jnp.ndarray, jnp.ndarray]:
     eigenvals, eigenvecs = scipy.linalg.eigh(Ka, Ma)
     reduced_eigenvals = eigenvals[:num_modes]
     reduced_eigenvecs = eigenvecs[:, :num_modes]
@@ -165,19 +165,18 @@ def compute_eigs_scipy(
 def compute_eigs_load(num_modes: int,
                       path: pathlib.Path,
                       eig_names: list[str],
-                      *args, **kwargs)-> (jnp.ndarray, jnp.ndarray):
-    #eigenvals = jnp.load("/home/ac5015/programs/FEM4INAS/examples/SailPlane/FEM/w.npy")
-    #eigenvecs = jnp.load("/home/ac5015/programs/FEM4INAS/examples/SailPlane/FEM/v.npy")
-    #eigenvals = jnp.load("/home/ac5015/programs/FEM4INAS/examples/ArgyrisFrame/FEM/w.npy")
-    #eigenvecs = jnp.load("/home/ac5015/programs/FEM4INAS/examples/ArgyrisFrame/FEM/v.npy")
-    # eigenvals = jnp.load("/home/ac5015/programs/FEM4INAS/examples/ArgyrisBeam/FEM/w.npy")
-    # eigenvecs = jnp.load("/home/ac5015/programs/FEM4INAS/examples/ArgyrisBeam/FEM/v.npy")
-    if path is not None:
+                      *args, **kwargs)-> tuple[jnp.ndarray, jnp.ndarray]:
+    
+    if eig_names is None and path is None:
+        eigenvals = kwargs['eigenvals']
+        eigenvecs = kwargs['eigenvecs']
+    elif path is None:
+        eigenvals = jnp.load(eig_names[0])
+        eigenvecs = jnp.load(eig_names[1])   
+    else:
         eigenvals = jnp.load(path / eig_names[0])
         eigenvecs = jnp.load(path / eig_names[1])
-    else:
-        eigenvals = jnp.load(eig_names[0])
-        eigenvecs = jnp.load(eig_names[1])        
+
     reduced_eigenvals = eigenvals[:num_modes]
     reduced_eigenvecs = eigenvecs[:, :num_modes]
     return reduced_eigenvals, reduced_eigenvecs

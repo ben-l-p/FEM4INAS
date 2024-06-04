@@ -1,10 +1,11 @@
 import diffrax
 import optimistix as optx
 import jax.numpy as jnp
+import typing
 
 dict_norm = dict(linalg_norm=jnp.linalg.norm)
 
-def ode(F: callable,
+def ode(F: typing.Callable,
         args,
         solver_name: str,
         q0,
@@ -40,8 +41,8 @@ def ode(F: callable,
                               dt0=dt,
                               y0=q0,
                               args=args,
-                              #throw=False,
-                              max_steps=20000,
+                              throw=False,                  ## EDIT
+                              max_steps=30000,
                               saveat=saveat,
                               **diffeqsolve_sett
                               )

@@ -255,7 +255,7 @@ def dq_20g273(t, q, *args):
     q0 = q[states['q0']]
     #ql_tensor = ql.reshape((num_modes, num_poles))
     eta_s = xloads.eta_rogerstruct(q0, q1, ql,
-                                   A0hat, A1hat, A2hatinv,
+                                   A0hat, A1hat,
                                    num_modes, num_poles)
     eta_gust = xloads.eta_rogergust(t, xgust, F1gust)
     F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
@@ -272,8 +272,8 @@ def dq_20g273(t, q, *args):
 
 #@partial(jax.jit, static_argnums=2)
 def dq_20G1(t, q, *args):
-    """Free Structural dynamic gravity forces."""
-    
+    """Clamped Structural dynamic gravity forces."""
+
     (gamma1, gamma2, omega, phi1l, psi2l,
      force_gravity,
      states,
@@ -284,11 +284,8 @@ def dq_20G1(t, q, *args):
     
     q1 = q[states['q1']]
     q2 = q[states['q2']]
-    try:
-        qr = q[states['qr']]
-    except:
-        qr = jnp.array([1, 0, 0, 0])
-    
+    qr = jnp.array((1, 0, 0, 0))
+
     Rab = common.computeRab_node0(psi2l, q2, qr, X_xdelta, C0ab,
                                   component_names,
                                    num_nodes,
@@ -299,6 +296,7 @@ def dq_20G1(t, q, *args):
     eta = xloads.eta_pointdead_const(phi1l,
                                      force_gravity[-1],
                                      Rab)
+    
     F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
     F1 += eta
 
@@ -307,6 +305,7 @@ def dq_20G1(t, q, *args):
 
 # NEW
 def dq_20g3(t, q, *args):
+    """Clamped structure with Roger aero"""
     (gamma1, gamma2, omega, states,
      num_modes, num_poles,
      A0hat, A1hat, A2hatinv, A3hat,
@@ -331,6 +330,7 @@ def dq_20g3(t, q, *args):
 
 # NEW
 def dq_20G3(t, q, *args):
+    """Clamped structure with gravity and Roger aero"""
     (gamma1, gamma2, omega, phi1l, psi2l, force_gravity,
     states, X_xdelta, C0ab, component_names, num_nodes,
      component_nodes, component_father, num_modes, num_poles,
@@ -370,6 +370,7 @@ def dq_20G3(t, q, *args):
 
 # SHARPy
 def dq_20G27(t, q, *args):
+    """Clamped structure with gravity and statespace aero"""
     # State space with no gust
     (gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
      states, X_xdelta, C0ab, component_names, num_nodes, 
@@ -398,5 +399,41 @@ def dq_20G27(t, q, *args):
     F1 += eta_s + eta_g
 
     Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
+
+    return jnp.hstack([F1, F2, Fl])
+
+# SHARPy
+def dq_20G189(t, q, *args):
+    """Clamped structure with gravity, statespace aero and gust"""
+    # State space with gust
+    (gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
+     states, X_xdelta, C0ab, component_names, num_nodes, 
+     component_nodes, component_father, Ahat, B0hat, B1hat, Bwhat, Chat, D0hat, D1hat, Dwhat, xgust) = args[0]
+
+    q1 = q[states['q1']]
+    q2 = q[states['q2']]
+    q0 = -q2 / omega
+    ql = q[states['ql']]
+
+    qr = jnp.array([1, 0, 0, 0])
+
+    Rab = common.computeRab_node0(psi2l, q2, qr, X_xdelta, C0ab,
+                                component_names,
+                                num_nodes,
+                                component_nodes,
+                                component_father)
+    
+    eta_grav = xloads.eta_pointdead_const(phi1l,
+                                    force_gravity[-1],
+                                    Rab)
+    
+    eta_s = xloads.eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat)
+    eta_gust = xloads.eta_statespacegust(t, xgust, Dwhat)
+
+    F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
+    F1 += eta_grav + eta_s + eta_gust
+
+    Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
+    Fl += xloads.lags_statespacegust(t, xgust, Bwhat)
 
     return jnp.hstack([F1, F2, Fl])

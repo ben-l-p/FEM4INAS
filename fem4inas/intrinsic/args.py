@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 import fem4inas.preprocessor.solution as solution
 import fem4inas.preprocessor.containers.intrinsicmodal as intrinsicmodal
+import typing
 
 def _args_diffrax(input1):
 
@@ -18,7 +19,7 @@ def _args_runge_kutta(input1):
 
     return input1
 
-def catter2library(fun: callable):
+def catter2library(fun: typing.Callable):
 
     def wrapper(*args, **kwargs):
 
@@ -219,7 +220,7 @@ def arg_20G2(sol: solution.IntrinsicSolution,
     gamma1 = sol.data.couplings.gamma1
     gamma2 = sol.data.couplings.gamma2
     omega = sol.data.modes.omega
-    #x = system.xloads.x
+#     x = system.xloads.x
     states = system.states
     force_gravity = system.xloads.force_gravity
     X_xdelta = sol.data.modes.X_xdelta
@@ -300,7 +301,6 @@ def arg_20G1(sol: solution.IntrinsicSolution,
     gamma1 = sol.data.couplings.gamma1
     gamma2 = sol.data.couplings.gamma2
     omega = sol.data.modes.omega
-    #x = system.xloads.x
     states = system.states
     force_gravity = system.xloads.force_gravity
     X_xdelta = sol.data.modes.X_xdelta

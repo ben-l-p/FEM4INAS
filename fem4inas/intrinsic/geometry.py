@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import numpy as np
 from multipledispatch import dispatch
 import pathlib
-from typing import Sequence, Any
+from typing import Sequence, Any, Optional
 from fem4inas.utils import flatten_list
 from collections.abc import Iterable
 
@@ -48,13 +48,13 @@ def list2dict(obj: list | dict):
     return out
 
 def build_grid(grid: str | jnp.ndarray | pd.DataFrame | None,
-               X: jnp.ndarray | None,
+               X: Optional[jnp.ndarray],
                fe_order: list[int] | jnp.ndarray | None,
                fe_order_start: int,
-               component_vect: list[str] | None) -> (pd.DataFrame,
+               component_vect: Optional[list[str]]) -> tuple[pd.DataFrame,
                                                      jnp.ndarray,
                                                      np.ndarray,
-                                                     list[str]):
+                                                     list[str]]:
     if grid is None:
         assert X is not None, "X needs to be provided \
         when no grid file is given"
@@ -86,8 +86,8 @@ def build_grid(grid: str | jnp.ndarray | pd.DataFrame | None,
     df_grid.fe_order -= fe_order_start
     return df_grid, X, fe_order, component_vect
 
-def compute_clamped(fe_order: list[int]) -> (list[int], dict[str: list],
-                                             dict[str: list], int):
+def compute_clamped(fe_order: list[int]) -> tuple[list[int], dict[str, list],
+                                             dict[str, list], int]:
     """Computes the clamped characteristics of the model
 
 
@@ -145,7 +145,7 @@ def compute_clamped(fe_order: list[int]) -> (list[int], dict[str: list],
     return clamped_nodes, freeDoF, clampedDoF, total_clampedDoF
 
 def compute_component_father(component_connectivity:
-                             dict[str:list]) -> (list[str], dict[str:str]):
+                             dict[str, list]) -> tuple[list[str], dict[str, str]]:
     """Calculates the father component of each component
 
     Assuming an outwards flow from the first node, every path in the
@@ -177,7 +177,7 @@ def compute_component_father(component_connectivity:
     return component_names, component_father
 
 @dispatch(list)
-def compute_component_nodes(components_range: list[str]) -> dict[str:list]:
+def compute_component_nodes(components_range: list[str]) -> dict[str, list]:
     """Links components to their nodes 
 
     Links the nodes (as indexes of DataFrame or list) to the
@@ -203,7 +203,7 @@ def compute_component_nodes(components_range: list[str]) -> dict[str:list]:
     return component_nodes
 
 @dispatch(pd.DataFrame)
-def compute_component_nodes(df: pd.DataFrame) -> dict[str:list]:
+def compute_component_nodes(df: pd.DataFrame) -> dict[str, list]:
     """Links components to their nodes 
 
     Links the nodes (as indexes of DataFrame or list) to the
@@ -229,8 +229,8 @@ def compute_component_nodes(df: pd.DataFrame) -> dict[str:list]:
     return component_nodes
 
 def compute_prevnode(components_range: Sequence[str],
-                     component_nodes: dict[str:list[int]],
-                     component_father: dict[str:int]) -> list[int]:
+                     component_nodes: dict[str, list[int]],
+                     component_father: dict[str, int]) -> list[int]:
     """Computes the previous node index to each node
 
     for a simple graph like 0--1--3--2--4 the output will be [None, 0,
@@ -277,8 +277,8 @@ def compute_prevnode(components_range: Sequence[str],
     return prevnodes
 
 def compute_component_children(component_name: str,
-                               component_connectivity: dict[str:list[str | int]],
-                               chain:list = None) -> list[str]:
+                               component_connectivity: dict[str, list[str | int]],
+                               chain:Optional[list] = None) -> list[str]:
     """Computes the children components on any given component
 
     Parameters
@@ -313,8 +313,8 @@ def compute_component_children(component_name: str,
     return chain
 
 def compute_component_chain(component_names: list[str],
-                            component_connectivity: dict[str:list[str | int]]
-                            ) -> dict[str:list[str]]:
+                            component_connectivity: dict[str, list[str | int]]
+                            ) -> dict[str, list[str]]:
     """Computes the dictionary that maps all the components to their corresponding children
 
     Parameters
@@ -392,10 +392,10 @@ def compute_Mdiff(prevnodes: Sequence[int],
 
 def compute_Mfe_order(fe_order: np.ndarray,
                       clamped_nodes: list[int],
-                      freeDoF: dict[str: list],
+                      freeDoF: dict[str, list],
                       total_clampedDoF: int,
-                      component_nodes: dict[str:list],
-                      component_chain: dict[str:list],
+                      component_nodes: dict[str, list],
+                      component_chain: dict[str, list],
                       num_nodes: int) -> jnp.ndarray:
     """Finds the order to swap quantities from the FE model to the input nodes 
 
@@ -444,8 +444,8 @@ def compute_Mfe_order(fe_order: np.ndarray,
     return jnp.array(M)
 
 def compute_Mloadpaths(components_range: list[str],
-                       component_nodes: dict[str:list[int]],
-                       component_chain: dict[str: list[str]],
+                       component_nodes: dict[str, list[int]],
+                       component_chain: dict[str, list[str]],
                        num_nodes: int) -> jnp.ndarray:
     """Finds the load paths for the internal forces at each node.
 
@@ -490,8 +490,8 @@ def compute_Mloadpaths(components_range: list[str],
     return jnp.array(M)
 
 def convert_components(component_names: list[str],
-                       component_nodes: dict[str:list[int]],
-                       component_father: dict[str:int]):
+                       component_nodes: dict[str, list[int]],
+                       component_father: dict[str, int]):
     num_components = len(component_names)
     names_new = tuple(range(num_components))
     nodes_new = tuple([component_nodes[ci]

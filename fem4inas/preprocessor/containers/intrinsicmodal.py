@@ -256,7 +256,10 @@ class Dxloads(DataContainer):
         # force_gravity = jnp.zeros((2, 6, num_nodes))
         gravity = self.gravity * self.gravity_vect
         gravity_field = jnp.hstack([jnp.hstack([gravity, 0., 0., 0.])] * num_nodes)
-        _force_gravity = jnp.matmul(Mfe_order, gravity_field)
+
+        # _force_gravity = jnp.matmul(Mfe_order, gravity_field)                      ### Old
+        _force_gravity = jnp.matmul(jnp.matmul(Mfe_order, Ma), gravity_field)        ### New
+
         gravity_interpol = jnp.vstack([xi * _force_gravity for xi in
                                       jnp.linspace(0, 1, len_x)]).T
         force_gravity = reshape_field(gravity_interpol, len_x, num_nodes_out)  # Becomes  (len_x, 6, Nn)
@@ -319,7 +322,7 @@ class Dfem(DataContainer):
     component_names: list = dfield("Name of components defining the structure", init=False)
     component_father: dict[str: str] = dfield(
         "Map between each component and its father", init=False)
-    component_nodes: dict[str: list[int]] = dfield("Node indexes of the component",
+    component_nodes: dict[str, list[int]] = dfield("Node indexes of the component",
                                                             init=False)
     component_names_int: tuple[int] = dfield("Name of components defining the structure", init=False)
     component_father_int: tuple[int] = dfield(
@@ -327,11 +330,11 @@ class Dfem(DataContainer):
     component_nodes_int: tuple[list[int]] = dfield("Node indexes of the component",
                                                    init=False)    
     
-    component_chain: dict[str:list[str]] = dfield(" ", init=False)
+    component_chain: dict[str, list[str]] = dfield(" ", init=False)
     #
     clamped_nodes: list[int] = dfield("List of clamped or multibody nodes", init=False)
-    freeDoF: dict[str: list] = dfield("Grid coordinates", init=False)    
-    clampedDoF: dict[str: list] = dfield("Grid coordinates", init=False)
+    freeDoF: dict[str, list] = dfield("Grid coordinates", init=False)    
+    clampedDoF: dict[str, list] = dfield("Grid coordinates", init=False)
     total_clampedDoF: int = dfield("Grid coordinates", init=False)
     #
     prevnodes: list[int] = dfield("""Immediate previous node following """, init=False)    
@@ -441,8 +444,8 @@ class Ddriver(DataContainer):
                                default=True)
     save_fem: bool = dfield("""Save presimulation data""",
                             default=True)
-    subcases: dict[str:Dxloads] = dfield("", default=None)
-    supercases: dict[str:Dfem] = dfield(
+    subcases: dict[str, Dxloads] = dfield("", default=None)
+    supercases: dict[str, Dfem] = dfield(
         "", default=None)
     def __post_init__(self):
 

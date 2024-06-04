@@ -3,13 +3,14 @@ import pathlib
 import jax.numpy as jnp
 import numpy as np
 import pickle
+import typing
 
 class Solution(ABC):
     @abstractmethod
     def set_solcontainer():
         ...
 
-    def __init__(self, path: str | pathlib.Path = None):
+    def __init__(self, path: typing.Optional[str | pathlib.Path] = None):
         self.set_solcontainer()
         if path is not None:
             self.path = pathlib.Path(path)

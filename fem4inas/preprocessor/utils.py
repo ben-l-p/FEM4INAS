@@ -56,7 +56,7 @@ def initialise_Dclass(data, Dclass, **kwargs):
     else:
         raise TypeError("Wrong input type")
 
-def dump_inputs(data: dict[str:list[Any, str]],
+def dump_inputs(data: dict[str, list[Any, str]],
                 indent:int=0,
                 with_comments:bool=True):
 
@@ -76,7 +76,7 @@ def dump_inputs(data: dict[str:list[Any, str]],
     return data
 
 def dump_yaml(file_out: str | pathlib.Path,
-              data_in: dict[str:list[Any, str]],
+              data_in: dict[str, list[Any, str]],
               with_comments=True):
 
     yaml = YAML()
