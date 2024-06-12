@@ -102,7 +102,6 @@ class Daero(DataContainer):
     controller: DController = dfield("", init=False)
 
     # Statespace aero
-    use_reduced_time: bool = dfield("", default=None)
     ss_A: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
     ss_B0: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
     ss_B1: str | jnp.ndarray = dfield("", default=None, yaml_save=False)

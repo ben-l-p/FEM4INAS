@@ -50,7 +50,7 @@ class AeroRoger(ModalAero):
     def _build_rfa(self):
         ...
         
-    def _get_matrix(self, matrix: jnp.array, name: str):
+    def _get_matrix(self, matrix: jnp.ndarray, name: str):
         
         self.container[f"{name}0"] = matrix[0]
         self.container[f"{name}1"] = matrix[1]
@@ -157,14 +157,11 @@ class AeroStatespace(ModalAero):
 
         for key in ['A', 'B0', 'B1', 'Bw']:
             if key in self.container.keys():
-                if self.sys.aero.use_reduced_time:
-                    self.container[key + 'hat'] = self.container[key]*2*self.u_inf/self.c_ref
-                else:
                     self.container[key + 'hat'] = self.container[key]
 
         for key in ['C', 'D0', 'D1', 'Dw']:
             if key in self.container.keys():
-                self.container[key + 'hat'] = self.container[key]*self.q_inf
+                self.container[key + 'hat'] = self.container[key]
 
     def save_sol(self):
         self.sol.add_container("ModalAeroStatespace",
