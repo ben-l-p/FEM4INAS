@@ -543,9 +543,9 @@ class Dsystem(DataContainer):
                         default=None)
     num_states: int = dfield("""Total number of states""",
                         default=None)
-    init_states: dict[str:list] = dfield("""Dictionary with initial conditions for each state""",
+    init_states: dict[str, list] = dfield("""Dictionary with initial conditions for each state""",
                                default=None)
-    init_mapper: dict[str:str] = dfield("""Dictionary mapping states types to functions in initcond""",
+    init_mapper: dict[str, str] = dfield("""Dictionary mapping states types to functions in initcond""",
                                         default=dict(q1="velocity", q2="force"))
 
     def __post_init__(self):
@@ -688,8 +688,8 @@ class Dsystem(DataContainer):
 @dataclass(frozen=True)
 class Dsystems(DataContainer):
 
-    sett: dict[str: dict] = dfield("Settings ", yaml_save=True)
-    mapper: dict[str: Dsystem]  = dfield("Dictionary with systems in the simulation",
+    sett: dict[str, dict] = dfield("Settings ", yaml_save=True)
+    mapper: dict[str, Dsystem]  = dfield("Dictionary with systems in the simulation",
                                        init=False)
 
     def __post_init__(self):

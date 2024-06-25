@@ -60,7 +60,7 @@ def linear_interpolation(t, x, data_tensor):
     f_lower = data_tensor[xindex_lower]
     f_interpol = weight_upper * f_upper + weight_lower  * f_lower
     return f_interpol
-
+jax.lax.add
 @jax.jit
 def linear_interpolation2(t, x, data_tensor):
 
@@ -251,13 +251,14 @@ def eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat):
     eta_s = Chat @ ql + D0hat @ q0 + D1hat @ q1
     return eta_s
 
-def lags_statespacegustboth(t, xgust, Flgust):
-    Flgust_tensor = linear_interpolation2(t, xgust, Flgust)
+def lags_statespacegust(t, xgust, Flgust):
+    Flgust_tensor = linear_interpolation3(t, xgust, Flgust)
     Flgust = jnp.hstack(Flgust_tensor)
     return Flgust
 
 def eta_statespacegust(t, xgust, F1gust):
     eta = linear_interpolation3(t, xgust, F1gust)
+
     return eta
 
 ########################

@@ -174,8 +174,8 @@ class GustRogerMc(Gust):
                           Qhj_w=self.Q_w,
                           Qhj_wdot=self.Q_wdot,
                           Qhj_wddot=self.Q_wddot,
-                          Qhj_wsum=self.Q_wsum,
-                          Qhjl_wdot=self.Ql_wdot
+                          Qhj_wsum=self.Q_wsum,         #
+                          Qhjl_wdot=self.Ql_wdot        #
                           )
 
     def _define_eta(self):
@@ -203,7 +203,7 @@ class GustStatespaceMc(Gust):
 
         self.settings = settings
         self.solaero = getattr(sol.data,
-                               f"modalaeroroger_{settings.name}")
+                               f"modalaerostatespace_{settings.name}")
         self.gust = None
         self.shape_span = None
         self.time = None
@@ -259,7 +259,7 @@ class GustStatespaceMc(Gust):
         NpxNt panel downwash in time
         """
         coeff = 2. * jnp.pi * self.u_inf / self.gust_length
-        @jax.jit
+        # @jax.jit
         def kernel(collocation_point, normal):
             delay = (collocation_point[0]
                      + self.gust_shift) / self.u_inf
@@ -275,8 +275,9 @@ class GustStatespaceMc(Gust):
 
             return gust
 
-        f1  = jax.vmap(kernel, in_axes=(0,0), out_axes=(0,0,0)) 
+        f1  = jax.vmap(kernel, in_axes=(0,0), out_axes=(0)) 
         self.gust = f1(self.collocation_points, self.normals)
+        self._define_eta()
 
     def calculate_normals(self):
 
@@ -289,5 +290,14 @@ class GustStatespaceMc(Gust):
         sol.add_container('GustStatespace', label="_" + sys_name,
                           w=self.gust,
                           x=self.time,
-                          gust=self.gust
+                          Bw_gust = self.Bw_gust,
+                          Dw_gust = self.Dw_gust
                           )
+        
+    def _define_eta(self):
+        """
+        NtxNm
+        """
+
+        self.Bw_gust = self.solaero.Bwhat @ self.gust
+        self.Dw_gust = self.solaero.Dwhat @ self.gust

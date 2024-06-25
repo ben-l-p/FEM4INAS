@@ -48,8 +48,7 @@ def ode(F: typing.Callable,
                               )
     return sol
 
-def ode2(F: callable,
-        args,
+def ode2(F: typing.Callable,
         solver_name: str,
         q0,
         t0,
@@ -78,7 +77,6 @@ def ode2(F: callable,
                               saveat=saveat
                               )
     return sol
-
 
 def newton_raphson(F, q0, args, rtol, atol, max_steps, kappa, norm, jac=None, **kwargs):
 

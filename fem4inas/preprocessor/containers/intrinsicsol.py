@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import numpy as np
 import jax.numpy as jnp
+from typing import Optional
 
 @dataclass(slots=True)
 class Modes:
@@ -90,22 +91,30 @@ class GustRoger:
 @dataclass(slots=True)
 class ModalAeroStatespace:
     
-    A: jnp.ndarray = None
-    B0: jnp.ndarray = None
-    B1: jnp.ndarray = None
-    Bw: jnp.ndarray = None
-    C: jnp.ndarray = None
-    D0: jnp.ndarray = None
-    D1: jnp.ndarray = None
-    Dw: jnp.ndarray = None
-    Ahat: jnp.ndarray = None
-    B0hat: jnp.ndarray = None
-    B1hat: jnp.ndarray = None
-    Bwhat: jnp.ndarray = None
-    Chat: jnp.ndarray = None
-    D0hat: jnp.ndarray = None
-    D1hat: jnp.ndarray = None
-    Dwhat: jnp.ndarray = None
+    A: Optional[jnp.ndarray] = None
+    B0: Optional[jnp.ndarray] = None
+    B1: Optional[jnp.ndarray] = None
+    Bw: Optional[jnp.ndarray] = None
+    C: Optional[jnp.ndarray] = None
+    D0: Optional[jnp.ndarray] = None
+    D1: Optional[jnp.ndarray] = None
+    Dw: Optional[jnp.ndarray] = None
+    Ahat: Optional[jnp.ndarray] = None
+    B0hat: Optional[jnp.ndarray] = None
+    B1hat: Optional[jnp.ndarray] = None
+    Bwhat: Optional[jnp.ndarray] = None
+    Chat: Optional[jnp.ndarray] = None
+    D0hat: Optional[jnp.ndarray] = None
+    D1hat: Optional[jnp.ndarray] = None
+    Dwhat: Optional[jnp.ndarray] = None
+
+@dataclass(slots=True)
+class GustStatespace:
+
+    w: Optional[jnp.ndarray] = None
+    x: Optional[jnp.ndarray] = None
+    Bw_gust: Optional[jnp.ndarray] = None
+    Dw_gust: Optional[jnp.ndarray] = None
 
 # import dataclasses    
 # field_types = {field.name: field.type for field in dataclasses.fields(Modes)}

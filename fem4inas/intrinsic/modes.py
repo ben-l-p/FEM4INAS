@@ -360,7 +360,7 @@ def tilde0010(vector: jnp.ndarray) -> jnp.ndarray:
 def axis_tilde(tensor: jnp.ndarray) -> jnp.ndarray:
     """Apply tilde0010 to a tensor
 
-    The input tesor is iterated through axis 2 first, and axis 1
+    The input tensor is iterated through axis 2 first, and axis 1
     subsequently; tilde0010 is applied to axis 0.
 
     Parameters
