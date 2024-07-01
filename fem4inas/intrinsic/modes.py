@@ -264,9 +264,9 @@ def scale(phi1: jnp.ndarray,
           C0ab: jnp.ndarray,
           C06ab: jnp.ndarray,          
           *args, **kwargs):
-    """Sacales the intrinsic modes
+    """Scales the intrinsic modes
 
-    The porpuse is that the integrals alpha1 and alpha2 are the
+    The purpose is that the integrals alpha1 and alpha2 are the
     identity
 
     Parameters

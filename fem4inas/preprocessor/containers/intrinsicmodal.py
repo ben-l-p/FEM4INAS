@@ -90,8 +90,7 @@ class Daero(DataContainer):
     B: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
     C: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
     D: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
-    _controls: list[jnp.ndarray,
-                    jnp.ndarray] = dfield("", default=None)
+    _controls: list[jnp.ndarray, jnp.ndarray] = dfield("", default=None)
     poles: str | jnp.ndarray = dfield("", default=None)
     num_poles: int = dfield("", default=None)
     gust_profile: str = dfield("", default="mc", options=["mc"])
@@ -110,7 +109,7 @@ class Daero(DataContainer):
     ss_D0: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
     ss_D1: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
     ss_Dw: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
-
+    eta_a_jig: str | jnp.ndarray = dfield("", default=None, yaml_save=False)
 
     def __post_init__(self):
         object.__setattr__(self, "approx", self.approx.capitalize())
@@ -156,6 +155,9 @@ class Daero(DataContainer):
             object.__setattr__(self, "ss_D1", jnp.load(self.ss_D1))
         if isinstance(self.ss_Dw, (str, pathlib.Path)):
             object.__setattr__(self, "ss_Dw", jnp.load(self.ss_Dw))
+        if isinstance(self.eta_a_jig, (str, pathlib.Path)):
+            object.__setattr__(self, "eta_a_jig", jnp.load(self.eta_a_jig))
+
 
 
 @dataclass(frozen=True)

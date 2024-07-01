@@ -455,7 +455,7 @@ def dq_20G27(t, q, *args):
     # State space with no gust
     (gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
      states, X_xdelta, C0ab, component_names, num_nodes, 
-     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat) = args[0]
+     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat, eta_a_jig) = args[0]
 
     q1 = q[states['q1']]
     q2 = q[states['q2']]
@@ -477,7 +477,7 @@ def dq_20G27(t, q, *args):
     eta_s = xloads.eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat)
 
     F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
-    F1 += eta_s + eta_g
+    F1 += eta_s + eta_g + eta_a_jig
 
     Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
 
@@ -489,7 +489,7 @@ def dq_20G27l(t, q, *args):
     # State space with no gust
     (omega, phi1l, psi2l, force_gravity, 
      states, X_xdelta, C0ab, component_names, num_nodes, 
-     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat) = args[0]
+     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat, eta_a_jig) = args[0]
 
     q1 = q[states['q1']]
     q2 = q[states['q2']]
@@ -511,7 +511,7 @@ def dq_20G27l(t, q, *args):
     eta_s = xloads.eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat)
 
     F1, F2 = common.f_12l(omega, q1, q2)
-    F1 += eta_s + eta_g
+    F1 += eta_s + eta_g + eta_a_jig
 
     Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
 
@@ -523,7 +523,7 @@ def dq_20G189(t, q, *args):
     # State space with gust
     (gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
      states, X_xdelta, C0ab, component_names, num_nodes, 
-     component_nodes, component_father, Ahat, B0hat, B1hat, Bwhat, Chat, D0hat, D1hat, Dwhat, xgust, F1gust, Flgust) = args[0]
+     component_nodes, component_father, Ahat, B0hat, B1hat, Bwhat, Chat, D0hat, D1hat, Dwhat, eta_a_jig, xgust, F1gust, Flgust) = args[0]
 
     q1 = q[states['q1']]
     q2 = q[states['q2']]
@@ -546,7 +546,7 @@ def dq_20G189(t, q, *args):
     eta_gust = xloads.eta_statespacegust(t, xgust, F1gust)
 
     F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
-    F1 += eta_grav + eta_s + eta_gust
+    F1 += eta_grav + eta_s + eta_gust + eta_a_jig
 
     Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
     Fl += xloads.lags_statespacegust(t, xgust, Flgust)
@@ -559,7 +559,7 @@ def dq_20G189l(t, q, *args):
     # State space with gust
     (omega, phi1l, psi2l, force_gravity, 
      states, X_xdelta, C0ab, component_names, num_nodes, 
-     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat, xgust, F1gust, Flgust) = args[0]
+     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat, eta_a_jig, xgust, F1gust, Flgust) = args[0]
 
     q1 = q[states['q1']]
     q2 = q[states['q2']]
@@ -582,7 +582,7 @@ def dq_20G189l(t, q, *args):
     eta_gust = xloads.eta_statespacegust(t, xgust, F1gust)
 
     F1, F2 = common.f_12l(omega, q1, q2)
-    F1 += eta_grav + eta_s + eta_gust
+    F1 += eta_grav + eta_s + eta_gust + eta_a_jig
 
     Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
     Fl += xloads.lags_statespacegust(t, xgust, Flgust)
@@ -595,7 +595,7 @@ def dq_20G351(t, q, *args):
     # State space with no gust
     (gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
      states, X_xdelta, C0ab, component_names, num_nodes, 
-     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat) = args[0]
+     component_nodes, component_father, Ahat, B0hat, B1hat, Chat, D0hat, D1hat, eta_a_jig) = args[0]
 
     q1 = q[states['q1']]
     q2 = q[states['q2']]
@@ -617,7 +617,7 @@ def dq_20G351(t, q, *args):
     eta_s = xloads.eta_statespacestructure(q0, q1, ql, Chat, D0hat, D1hat)
 
     F1, F2 = common.f_12(omega, gamma1, gamma2, q1, q2)
-    F1 += eta_s + eta_g
+    F1 += eta_s + eta_g + eta_a_jig
 
     Fl = xloads.lags_statespacestructure(q0, q1, ql, Ahat, B0hat, B1hat)
 

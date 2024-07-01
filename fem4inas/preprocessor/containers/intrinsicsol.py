@@ -107,6 +107,7 @@ class ModalAeroStatespace:
     D0hat: Optional[jnp.ndarray] = None
     D1hat: Optional[jnp.ndarray] = None
     Dwhat: Optional[jnp.ndarray] = None
+    eta_a_jig: Optional[jnp.ndarray] = None
 
 @dataclass(slots=True)
 class GustStatespace:

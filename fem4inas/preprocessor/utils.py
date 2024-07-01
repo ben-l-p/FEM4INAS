@@ -9,7 +9,7 @@ from ruamel.yaml.comments import CommentedMap
 import pathlib
 import argparse
 
-def dfield(description, **kwargs):
+def dfield(description: str, **kwargs):
 
     options = kwargs.pop('options', None)
     default = kwargs.pop('default', 'not_defined')

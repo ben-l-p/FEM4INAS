@@ -258,7 +258,6 @@ class GustStatespaceMc(Gust):
         """
         NpxNt panel downwash in time
         """
-        coeff = 2. * jnp.pi * self.u_inf / self.gust_length
         # @jax.jit
         def kernel(collocation_point, normal):
             delay = (collocation_point[0]
@@ -269,8 +268,8 @@ class GustStatespaceMc(Gust):
                                      self.gust_totaltime), 1, 0)
     
             gust = filter_time * (shape_span * normal *
-                                  self.gust_intensity / (self.u_inf*2) *
-                                  (1 - jnp.cos(coeff * (self.time - delay)))
+                                  self.gust_intensity / 2 *
+                                  (1 - jnp.cos(2*jnp.pi*self.u_inf/self.gust_length * (self.time - delay)))
                                   )
 
             return gust

@@ -155,6 +155,11 @@ class AeroStatespace(ModalAero):
             self.container['Bw'] = self.sys.aero.ss_Bw
             self.container['Dw'] = self.sys.aero.ss_Dw
 
+        if self.sys.aero.eta_a_jig is None:
+            self.container['eta_a_jig'] = jnp.zeros(self.sys.aero.ss_B0.shape[1])
+        else:
+            self.container['eta_a_jig'] = self.sys.aero.eta_a_jig
+
         for key in ['A', 'B0', 'B1', 'Bw']:
             if key in self.container.keys():
                     self.container[key + 'hat'] = self.container[key]

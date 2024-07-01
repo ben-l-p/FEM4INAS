@@ -467,7 +467,7 @@ def arg_20G27(sol: solution.IntrinsicSolution,
         return(gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
                 states, X_xdelta, C0ab, component_names, num_nodes, 
                 component_nodes, component_father,
-                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat)
+                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat, aero.eta_a_jig)
 
 @catter2library
 def arg_20G27l(sol: solution.IntrinsicSolution,
@@ -493,7 +493,7 @@ def arg_20G27l(sol: solution.IntrinsicSolution,
         return(omega, phi1l, psi2l, force_gravity, 
                 states, X_xdelta, C0ab, component_names, num_nodes, 
                 component_nodes, component_father,
-                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat)
+                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat, aero.eta_a_jig)
 
 @catter2library
 def arg_20G189(sol: solution.IntrinsicSolution,
@@ -526,7 +526,7 @@ def arg_20G189(sol: solution.IntrinsicSolution,
                 states, X_xdelta, C0ab, component_names, num_nodes, 
                 component_nodes, component_father,
                 aero.Ahat, aero.B0hat, aero.B1hat, aero.Bwhat, aero.Chat,
-                aero.D0hat, aero.D1hat, aero.Dwhat, gust.x, F1gust, Flgust)
+                aero.D0hat, aero.D1hat, aero.Dwhat, aero.eta_a_jig, gust.x, F1gust, Flgust)
 
 @catter2library
 def arg_20G189l(sol: solution.IntrinsicSolution,
@@ -557,7 +557,7 @@ def arg_20G189l(sol: solution.IntrinsicSolution,
                 states, X_xdelta, C0ab, component_names, num_nodes, 
                 component_nodes, component_father,
                 aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, 
-                aero.D0hat, aero.D1hat, gust.x, F1gust, Flgust)
+                aero.D0hat, aero.D1hat, aero.eta_a_jig, gust.x, F1gust, Flgust)
 
 @catter2library
 def arg_20G351(sol: solution.IntrinsicSolution,
@@ -588,7 +588,7 @@ def arg_20G351(sol: solution.IntrinsicSolution,
         return(gamma1, gamma2, omega, phi1l, psi2l, force_gravity, 
                 states, X_xdelta, C0ab, component_names, num_nodes, 
                 component_nodes, component_father,
-                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat)
+                aero.Ahat, aero.B0hat, aero.B1hat, aero.Chat, aero.D0hat, aero.D1hat, aero.eta_a_jig)
 
 ############################################
 @catter2library
